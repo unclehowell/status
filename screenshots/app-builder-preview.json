@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Enquiry",
+      "hasCanvas": false,
+      "bodyTextLen": 17982,
+      "bodyTextHash": "d3153204a7a64df1cf094225ce342480104e6e88ad5394ed567005fbb54d256e",
+      "bodyTextPrefix": "TY MAWR · LLANDOUGH · 1667–1988 Enquiry Each party opens at enqu",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Enquiry",
+      "hasCanvas": false,
+      "bodyTextLen": 17838,
+      "bodyTextHash": "dd554d0cffa582c93b2ce3b69a938b279b3e4642724a6beb6e0d5498b5549433",
+      "bodyTextPrefix": "TY MAWR · LLANDOUGH · 1667–1988 Enquiry Tap enquiry → foi / gdpr",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

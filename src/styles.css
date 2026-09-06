@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0c0f0c;
+  --color-surface: #121612;
+  --color-elevated: #181d18;
+  --color-fg: #c5d0bf;
+  --color-muted: #7a8576;
+  --color-faint: #4d564a;
+  --color-line: #2a3328;
+  --color-accent: #9ecb8a;
+  --color-accent-fg: #0c0f0c;
+  --color-status-open: #e2d08a;
+  --color-status-sent: #7eb8d4;
+  --color-status-awaiting: #d4a574;
+  --color-status-replied: #8fcfbf;
+  --color-status-review: #b7c98a;
+  --color-status-complaint: #d98980;
+  --color-status-exhausted: #5a6358;
+  --color-status-bounce: #8a7068;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  * {
+    border-color: var(--color-line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.tree-row {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in oklab, var(--color-accent) 18%, transparent);
+  overflow-anchor: none;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tree-row:hover,
+.tree-row[data-active="true"] {
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
+}
+.tree-row:active {
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+}
+.tree-row .tree-tip {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tree-row .tree-tip {
+    display: block;
+    transition:
+      opacity 140ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tree-row:hover .tree-tip,
+  .tree-row:focus-visible .tree-tip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

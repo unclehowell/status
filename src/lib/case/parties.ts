@@ -1,0 +1,1502 @@
+import { buildAvenues, type Overlay } from "./procedures";
+import type { EmailHit, Party, Sector, Track } from "./types";
+
+function e(
+  date: string,
+  direction: EmailHit["direction"],
+  subject: string,
+  from: string,
+  to: string,
+  preview: string,
+  reference?: string,
+): EmailHit {
+  return { date, direction, subject, from, to, preview, reference };
+}
+
+type Seed = {
+  id: string;
+  name: string;
+  shortName: string;
+  sector: Sector;
+  track: Track;
+  role: string;
+  holds: string;
+  emails: string[];
+  policies: { label: string; url: string }[];
+  wdtk?: string;
+  notes: string;
+  overlays: Record<string, Overlay>;
+  foiPolicy?: string;
+  sarPolicy?: string;
+  complaintPolicy?: string;
+  ombudsman?: string;
+  ombudsmanUrl?: string;
+  foiContact?: string;
+  sarContact?: string;
+  complaintContact?: string;
+};
+
+const ME = "Sion Buckler <hywelapbuckler@gmail.com>";
+
+const seeds: Seed[] = [
+  {
+    id: "cadw",
+    name: "Cadw (Welsh Government Historic Environment)",
+    shortName: "Cadw",
+    sector: "heritage",
+    track: "welsh-public",
+    role: "Refused emergency spot-listing in December 1988; cannot currently account for the 1988 file. Most advanced institutional track.",
+    holds: "Listing advice, spot-listing requests, 1988 assessment of Great House Farm, Cof Cymru records, ATISN FOI file 27021.",
+    emails: [
+      "Andy.Wigley@gov.wales",
+      "Amy.Longford@gov.wales",
+      "cadw@customersupport.tfw.wales",
+    ],
+    policies: [
+      { label: "Welsh Government FOI / EIR", url: "https://www.gov.wales/freedom-information" },
+      { label: "Cadw contact / customer support", url: "https://cadw.gov.wales/about-us/contact-us" },
+      { label: "Welsh Government complaints", url: "https://www.gov.wales/complain-about-welsh-government" },
+      { label: "PSOW — how to complain", url: "https://www.ombudsman.wales/how-to-complain/" },
+      { label: "ICO FOI complaints", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes:
+      "ATISN 27021 submitted June 2026, internal review by Amy Longford, then Dr Andy Wigley on surviving records and historic retention. cadw@gov.wales and cadw@wales.gsi.gov.uk bounce. Use Andy.Wigley@gov.wales and the TfW customer-support channel. ICO and PSOW still remaining.",
+    foiPolicy: "https://www.gov.wales/freedom-information",
+    complaintPolicy: "https://www.gov.wales/complain-about-welsh-government",
+    ombudsman: "Public Services Ombudsman for Wales",
+    ombudsmanUrl: "https://www.ombudsman.wales/how-to-complain/",
+    foiContact: "Andy.Wigley@gov.wales / Amy.Longford@gov.wales",
+    overlays: {
+      "foi.identify": { status: "exhausted", note: "Cadw is a Welsh Government service; FOI/EIR is the right regime. ATISN 27021 allocated." },
+      "foi.submit": {
+        status: "exhausted",
+        reference: "ATISN 27021",
+        emails: [
+          e("2026-06-01", "out", "FOI / EIR — Great House Farm, Llandough (ATISN 27021)", ME, "Amy.Longford@gov.wales", "Initial FOI/EIR to Cadw concerning the 1988 spot-listing file and record lifecycle.", "ATISN 27021"),
+        ],
+      },
+      "foi.ack": { status: "exhausted", reference: "ATISN 27021" },
+      "foi.response": { status: "exhausted", reference: "ATISN 27021" },
+      "foi.review": {
+        status: "review",
+        reference: "ATISN 27021",
+        emails: [
+          e("2026-06-15", "in", "REVIEW of EOI ATISN 27021", "Amy.Longford@gov.wales", ME, "Acknowledgement of internal review; Amy Longford appointed case officer.", "ATISN 27021"),
+          e("2026-06-16", "out", "Re: REVIEW of EOI ATISN 27021", ME, "Amy.Longford@gov.wales", "Confirmed the communications are FOI/EIR information requests, not a general complaint."),
+          e("2026-07-02", "in", "RE: REVIEW of EOI ATISN 27021", "Amy.Longford@gov.wales", ME, "Internal review outcome attached."),
+          e("2026-08-09", "out", "CADW failures", ME, "Amy.Longford@gov.wales", "Forensic review of Cadw's 1988 assessment of Great House Farm submitted."),
+          e("2026-08-10", "out", "CADW failures – Revised Report (10 August 2026)", ME, "Amy.Longford@gov.wales", "Revised forensic report to replace the 9 August edition."),
+          e("2026-08-14", "in", "RE: CADW failures – Revised Report (10 August 2026)", "Amy.Longford@gov.wales", ME, "Confirmed the 10 August report is the operative version; collating a response."),
+          e("2026-08-27", "in", "RE: CADW failures – Revised Report (10 August 2026)", "Andy.Wigley@gov.wales", ME, "Escalated from ATISN 27021. Clarification on surviving Cadw records and historic retention arrangements.", "ATISN 27021"),
+          e("2026-08-27", "out", "Re: CADW failures – Revised Report (10 August 2026)", ME, "Andy.Wigley@gov.wales", "Further questions arising from the surviving-records explanation."),
+          e("2026-08-28", "out", "Re: CADW failures – Revised Report (10 August 2026)", ME, "Andy.Wigley@gov.wales", "Additional archival point placed on the record before they respond."),
+          e("2026-08-29", "out", "Great House Farm, Llandough", ME, "Andy.Wigley@gov.wales", "Attached latest Cadw file and a mock."),
+          e("2026-08-29", "in", "Re: Great House Farm, Llandough #611801922", "cadw@customersupport.tfw.wales", ME, "Sara: information passed to the relevant team.", "#611801922"),
+          e("2026-09-04", "in", "RE: Great House Farm, Llandough", "Andy.Wigley@gov.wales", ME, "Single reply to emails of 27, 28 and 29 August."),
+          e("2026-09-04", "out", "Re: Great House Farm, Llandough", ME, "Andy.Wigley@gov.wales", "Thank you Andy."),
+        ],
+      },
+      "foi.ico": { status: "open", note: "Next statutory step once the Wigley/Longford review correspondence is treated as closed or overdue." },
+      "foi.tribunal": { status: "open" },
+      "enquiry.informal": {
+        status: "replied",
+        emails: [
+          e("2026-08-29", "in", "Re: Great House Farm, Llandough #611801922", "cadw@customersupport.tfw.wales", ME, "Customer-support channel acknowledged and passed to the relevant team."),
+        ],
+      },
+      "enquiry.retention": { status: "open", note: "Send a formal preservation notice addressed to Cadw and Welsh Government records management." },
+      "complaint.s1": { status: "open", note: "FOI review is not a substitute for a maladministration complaint about the 1988 listing decision and the lost file." },
+      "complaint.ombudsman": { status: "open" },
+    },
+  },
+  {
+    id: "rcahmw",
+    name: "Royal Commission on the Ancient and Historical Monuments of Wales",
+    shortName: "RCAHMW",
+    sector: "heritage",
+    track: "welsh-public",
+    role: "Held the 1974 architectural survey of Great House Farm. Unclear whether Cadw consulted them in 1988.",
+    holds: "National Monuments Record of Wales, Coflein entries, 1974 survey, photographs, investigators' notes.",
+    emails: ["nmr.wales@rcahmw.gov.uk"],
+    policies: [
+      { label: "RCAHMW FOI", url: "https://rcahmw.gov.uk/about-us/corporate-information/freedom-of-information/" },
+      { label: "Coflein catalogue", url: "https://coflein.gov.uk/" },
+      { label: "PSOW", url: "https://www.ombudsman.wales/how-to-complain/" },
+    ],
+    notes: "NMR Enquiries acknowledged the forensic report on 14 Aug 2026 and forwarded to Online Services. A dedicated FOI (not just an enquiry) is still remaining.",
+    foiPolicy: "https://rcahmw.gov.uk/about-us/corporate-information/freedom-of-information/",
+    ombudsman: "Public Services Ombudsman for Wales",
+    ombudsmanUrl: "https://www.ombudsman.wales/how-to-complain/",
+    foiContact: "nmr.wales@rcahmw.gov.uk",
+    overlays: {
+      "enquiry.informal": {
+        status: "awaiting",
+        emails: [
+          e("2026-08-14", "in", "RE: CADW failures – Revised Report (10 August 2026)", "NMR Enquiries <nmr.wales@rcahmw.gov.uk>", ME, "Acknowledged the report; forwarded to Online Services to look into the matter."),
+        ],
+      },
+      "foi.submit": { status: "open", note: "Direct FOI still remaining: 1974 survey provenance, any 1988 contact with Cadw, Coflein omissions." },
+    },
+  },
+  {
+    id: "heneb",
+    name: "Heneb (Glamorgan-Gwent Archaeological Trust)",
+    shortName: "Heneb / GGAT",
+    sector: "heritage",
+    track: "welsh-public",
+    role: "1978–80 and 1990 archaeological assessments; 1989 'county treasure' description. Evidential, not a defendant.",
+    holds: "Regional Historic Environment Record (Archwilio), grey literature, watching briefs, 1989/1990 assessments around the demolition.",
+    emails: ["enquiries@heneb.org.uk", "her@heneb.org.uk", "Barbara.Rees@heneb.org.uk"],
+    policies: [
+      { label: "Archwilio HER", url: "https://www.archwilio.org.uk/" },
+      { label: "Heneb", url: "https://heneb.org.uk/" },
+    ],
+    notes: "Heneb is a limited company and not FOIA-listed. HER replied 22 May 2026: fill their enquiry form. Litigation-hold emailed 29 May (Barbara Rees OOO until 10 Jun). The form is still remaining.",
+    foiContact: "her@heneb.org.uk",
+    overlays: {
+      "foi.identify": {
+        status: "exhausted",
+        note: "Heneb confirmed 22 May 2026 they are a limited company and not subject to FOI. Do not send another FOIA request.",
+      },
+      "foi.submit": { status: "exhausted", note: "Not an FOIA public authority." },
+      "foi.ack": { status: "exhausted" },
+      "foi.clarify": { status: "exhausted" },
+      "foi.response": { status: "exhausted" },
+      "foi.review": { status: "exhausted" },
+      "foi.ico": { status: "exhausted", note: "ICO FOI complaint does not lie against a private limited company." },
+      "foi.tribunal": { status: "exhausted" },
+      "enquiry.informal": {
+        status: "replied",
+        emails: [
+          e("2026-05-20", "out", "Great House Farm, Williams/Buckler Family, Llandough, Vale of Glamorgan", ME, "her@heneb.org.uk", "FOI/EIR disclosure request (BCC)."),
+          e("2026-05-22", "in", "RE: Great House Farm, Williams/Buckler Family, Llandough, Vale of Glamorgan", "HER <her@heneb.org.uk>", ME, "Heneb is not subject to FOI as a limited company. Fill the enquiry form."),
+          e("2026-05-22", "out", "Re: Great House Farm, Williams/Buckler Family, Llandough, Vale of Glamorgan", ME, "her@heneb.org.uk", "Thanks."),
+          e("2026-05-29", "in", "Automatic reply: FORMAL DISCLOSURE NOTICE & LITIGATION HOLD", "Barbara Rees <Barbara.Rees@heneb.org.uk>", ME, "Next working day 10 June 2026."),
+        ],
+        note: "FOI refused as inapplicable. Use the HER enquiry form; that is the remaining archival route.",
+      },
+      "enquiry.catalogue": { status: "open", note: "Search Archwilio for GGAT 1978–80 / 1989–90 assessments around the demolition." },
+      "enquiry.retention": {
+        status: "sent",
+        emails: [
+          e("2026-05-29", "out", "FORMAL DISCLOSURE NOTICE & LITIGATION HOLD: Historic Significance, Planning Approvals, and Displaced Family Tenancy Records for Great House Farm, Llandough (FOIA/EIR Request)", ME, "Barbara.Rees@heneb.org.uk", "Litigation hold / disclosure notice."),
+        ],
+      },
+    },
+  },
+  {
+    id: "museum-wales",
+    name: "Amgueddfa Cymru — National Museum Wales",
+    shortName: "Museum Wales",
+    sector: "heritage",
+    track: "welsh-public",
+    role: "Possible holder of finds / reported discoveries at Great House Farm (soldier, etc.).",
+    holds: "Accession registers, finds correspondence, FOI 2026-024 file.",
+    emails: ["FOI.Requests@museumwales.ac.uk"],
+    policies: [
+      { label: "Museum Wales FOI", url: "https://museum.wales/freedom-of-information/" },
+      { label: "ICO FOI complaints", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes: "FOI 2026-024 received 27 Jul 2026; response 25 Aug; internal review accepted 26 Aug. ICO remaining after the review.",
+    foiPolicy: "https://museum.wales/freedom-of-information/",
+    ombudsman: "Public Services Ombudsman for Wales",
+    ombudsmanUrl: "https://www.ombudsman.wales/how-to-complain/",
+    foiContact: "FOI.Requests@museumwales.ac.uk",
+    overlays: {
+      "foi.submit": {
+        status: "exhausted",
+        reference: "FOI 2026-024",
+        emails: [
+          e("2026-07-27", "out", "FOI - 2026-024 - Great House Farm, Llandough", ME, "FOI.Requests@museumwales.ac.uk", "Request concerning records of a reported discovery at Great House Farm including a soldier.", "FOI 2026-024"),
+        ],
+      },
+      "foi.response": {
+        status: "exhausted",
+        reference: "FOI 2026-024",
+        emails: [
+          e("2026-08-25", "in", "FOI - 2026-024 - Great House Farm, Llandough", "FOI Requests <FOI.Requests@museumwales.ac.uk>", ME, "Response to the 27 July request."),
+        ],
+      },
+      "foi.review": {
+        status: "review",
+        reference: "FOI 2026-024",
+        emails: [
+          e("2026-08-26", "out", "Re: FOI - 2026-024 - Great House Farm, Llandough", ME, "FOI.Requests@museumwales.ac.uk", "Internal review requested: searches appear to have been insufficient."),
+          e("2026-08-26", "in", "RE: FOI - 2026-024 - Great House Farm, Llandough", "FOI.Requests@museumwales.ac.uk", ME, "Internal review accepted."),
+        ],
+      },
+    },
+  },
+  {
+    id: "glamorgan-archives",
+    name: "Glamorgan Archives",
+    shortName: "Glamorgan Archives",
+    sector: "archive",
+    track: "archive",
+    role: "Custodian of Bute, Mountjoy and Western Ground Rents papers (DBDT) and parish/burial registers.",
+    holds: "DBDT79/1 and related Bute/WGR material; Michaelston-le-Pit burial register; parish records for Llandough.",
+    emails: ["glamro@cardiff.gov.uk", "Alexis.Brito@cardiff.gov.uk"],
+    policies: [
+      { label: "Glamorgan Archives", url: "https://glamarchives.gov.uk/" },
+      { label: "Cardiff Council FOI", url: "https://www.cardiff.gov.uk/ENG/Your-Council/Data-protection-and-FOI/Pages/default.aspx" },
+    ],
+    notes: "Research enquiries 20–26 Aug 2026. Burial register confirmed for Michaelston-le-Pit. Physical examination of DBDT79/1 requested. A formal FOI for search logs / missing series remains available.",
+    foiContact: "glamro@cardiff.gov.uk",
+    overlays: {
+      "enquiry.informal": {
+        status: "replied",
+        emails: [
+          e("2026-08-20", "out", "Request for burial / parish register entries – William Buckler (1990) and related records (Mary Doreen Williams)", ME, "glamro@cardiff.gov.uk", "Research request for burial/parish registers."),
+          e("2026-08-22", "out", "Ty Mawr, Llandough, Cardiff", ME, "glamro@cardiff.gov.uk", "Targeted enquiry on DBDT and Bute / Mountjoy / Western Ground Rents material."),
+          e("2026-08-24", "in", "RE: Request for burial / parish register entries", "Alexis.Brito@cardiff.gov.uk", ME, "Ref 2026-3769. Burial register for Michaelston-le-Pit held.", "2026-3769"),
+          e("2026-08-26", "out", "DBDT79/1 – physical examination of the original", ME, "glamro@cardiff.gov.uk", "Request to examine the original DBDT79/1 and related Bute/WGR material."),
+        ],
+      },
+      "enquiry.catalogue": { status: "sent" },
+    },
+  },
+  {
+    id: "tna",
+    name: "The National Archives",
+    shortName: "National Archives",
+    sector: "archive",
+    track: "uk-public",
+    role: "Possible custodian of transferred court, Welsh Office, and departmental files on the 1987/88 proceedings.",
+    holds: "Transferred public records; Discovery catalogue; FOI on closed files.",
+    emails: ["FOIRequests@nationalarchives.gov.uk"],
+    wdtk: "https://www.whatdotheyknow.com/request/great_house_farm_llandough_cardiff_bp_vs_buckler_1987",
+    policies: [
+      { label: "TNA FOI", url: "https://www.nationalarchives.gov.uk/contact-us/freedom-of-information/" },
+      { label: "Discovery catalogue", url: "https://discovery.nationalarchives.gov.uk/" },
+      { label: "ICO FOI complaints", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes: "WDTK FOI taken off hold on 2 Sep 2026 after clarification; response due 23 Sep 2026.",
+    foiPolicy: "https://www.nationalarchives.gov.uk/contact-us/freedom-of-information/",
+    foiContact: "FOIRequests@nationalarchives.gov.uk",
+    overlays: {
+      "foi.submit": {
+        status: "exhausted",
+        emails: [
+          e("2026-09-02", "in", "RE: Freedom of Information request - Great House Farm, Llandough, Cardiff (BP vs Buckler 1987) CRM:007302446", "FOI Requests <FOIRequests@nationalarchives.gov.uk>", "request-1495300-08f92a1d@whatdotheyknow.com", "Clarification received; request taken off hold; respond by 23/09/2026.", "CRM:007302446"),
+        ],
+      },
+      "foi.ack": { status: "exhausted", deadline: "2026-09-23" },
+      "foi.clarify": { status: "exhausted" },
+      "foi.response": { status: "awaiting", deadline: "2026-09-23", note: "Clock running. Diary 23 Sep 2026." },
+    },
+  },
+  {
+    id: "nlw",
+    name: "National Library of Wales",
+    shortName: "NLW",
+    sector: "archive",
+    track: "welsh-public",
+    role: "Legal-deposit newspapers, maps, estate collections, Welsh Newspapers Online.",
+    holds: "South Wales Echo / Western Mail deposit, estate maps, personal papers.",
+    emails: ["gofyn@llyfrgell.cymru"],
+    policies: [
+      { label: "NLW FOI", url: "https://www.library.wales/about-nlw/governance/freedom-of-information" },
+      { label: "Welsh Newspapers Online", url: "https://newspapers.library.wales/" },
+    ],
+    notes: "No Gmail correspondence located. Open a newspaper/map enquiry and, if needed, FOI for any suppressed ITV/press files they accessioned.",
+    overlays: {},
+  },
+  {
+    id: "mount-stuart",
+    name: "Mount Stuart Trust / Bute Estate collections",
+    shortName: "Bute / Mount Stuart",
+    sector: "private",
+    track: "private",
+    role: "Successor holder of Bute Estate private papers not deposited at Glamorgan Archives.",
+    holds: "Private Bute correspondence, estate maps, rentals that never left family custody.",
+    emails: ["archives@mountstuart.com"],
+    policies: [
+      { label: "Mount Stuart", url: "https://www.mountstuart.com/" },
+    ],
+    notes: "archives@mountstuart.com bounced 23 Aug 2026. Find a live collections contact; Glamorgan Archives remains the public deposit.",
+    overlays: {
+      "enquiry.informal": {
+        status: "bounce",
+        emails: [
+          e("2026-08-23", "out", "Great House Farm (alias Cedwyn/ Cedfin)", ME, "archives@mountstuart.com", "Enquiry about historical Bute Estate records concerning Great House Farm / Ty Mawr."),
+          e("2026-08-23", "in", "Delivery Status Notification (Failure)", "Mail Delivery Subsystem", ME, "Address not found: archives@mountstuart.com."),
+        ],
+      },
+    },
+  },
+  {
+    id: "hmlr",
+    name: "HM Land Registry",
+    shortName: "Land Registry",
+    sector: "land",
+    track: "land-registry",
+    role: "Second Defendant in the anchor title claim. Registered the disputed title (WA231076).",
+    holds: "Current and historical editions of WA231076 and WA240304, filed deeds, first-registration file N610CGV, application files, indemnity papers.",
+    emails: [
+      "customersupport@landregistry.gov.uk",
+      "Wales.Office@landregistry.gov.uk",
+      "Central@landregistry.gov.uk",
+      "Coventry.Office@landregistry.gov.uk",
+      "Birkenhead.Office@landregistry.gov.uk",
+    ],
+    policies: [
+      { label: "Get information about property", url: "https://www.gov.uk/get-information-about-property-and-land" },
+      { label: "HMLR complaints procedure", url: "https://www.gov.uk/government/organisations/land-registry/about/complaints-procedure" },
+      { label: "HMLR FOI", url: "https://www.gov.uk/government/organisations/land-registry/about/publication-scheme" },
+      { label: "ICO", url: "https://ico.org.uk/make-a-complaint/" },
+    ],
+    notes: "Wales Office (Mr Haste) identified surviving first-registration records for WA231076 and WA240304 under N610CGV (30 Jul). Customer enquiry 260812-6565153 was logged with Title No: 0 — chase quoting WA231076. A second ticket 260812-6561894 correctly cites WA231076. Official copies and historical editions still remaining.",
+    foiContact: "customersupport@landregistry.gov.uk",
+    complaintPolicy: "https://www.gov.uk/government/organisations/land-registry/about/complaints-procedure",
+    overlays: {
+      "title.enquiry": {
+        status: "awaiting",
+        reference: "260812-6565153 / 260812-6561894",
+        emails: [
+          e("2026-06-02", "in", "Enquiry: 260602-6249146", "donotreply-dynamics@landregistry.gov.uk", ME, "Online enquiry logged 260602-6249146."),
+          e("2026-06-03", "in", "Enquiry: 260603-6261072", "donotreply-dynamics@landregistry.gov.uk", ME, "Online enquiry logged 260603-6261072."),
+          e("2026-08-12", "in", "Further to Your Enquiry: Enquiry Ref: 260812-6565153", "donotreply-dynamics@landregistry.gov.uk", ME, "Usual reply within published timescales.", "260812-6565153"),
+          e("2026-08-12", "in", "Further to Your Enquiry: Ref: 260812-6561894 Title No: WA231076", "Central@landregistry.gov.uk", ME, "Wrong contact information on their letter; directing customers to the published channel.", "260812-6561894"),
+          e("2026-08-26", "in", "Further to Your Enquiry: Ref: 260812-6565153 ABR No: 0 Title No: 0", "Customer Support <customersupport@landregistry.gov.uk>", ME, "Enquiry referred for consideration by the appropriate team. Title No: 0 on the ticket.", "260812-6565153"),
+        ],
+        note: "Title No: 0 on ticket 6565153. Chase quoting WA231076 and WA240304.",
+      },
+      "title.historical": {
+        status: "awaiting",
+        reference: "N610CGV / WA231076 / WA240304",
+        emails: [
+          e("2026-05-25", "in", "Your Ref: EDD Our Ref: WA231076/A/216/MC", "Birkenhead.Office@landregistry.gov.uk", ME, "Official letter from Mr Gill on title WA231076."),
+          e("2026-05-26", "out", "Re: Your Ref: EDD Our Ref: WA231076/A/216/MC", ME, "Birkenhead.Office@landregistry.gov.uk", "Noted HMLR treated grandmother as the same individual despite the name used."),
+          e("2026-07-13", "in", "Your Ref: EDD Our Ref: WA231076/A/216/KH", "Coventry.Office@landregistry.gov.uk", ME, "Further official letter on WA231076."),
+          e("2026-07-30", "in", "Your Ref: EDD Our Ref: WA231076/A/216/SH", "Wales.Office@landregistry.gov.uk", ME, "Mr Haste: surviving records held for WA231076 and WA240304. Ref N610CGV.", "N610CGV"),
+          e("2026-07-30", "out", "Re: Your Ref: EDD Our Ref: WA231076/A/216/SH", ME, "Wales.Office@landregistry.gov.uk", "Not seeking to reopen a completed application; asking about surviving first-registration documents.", "N610CGV"),
+          e("2026-08-12", "out", "Clarification of surviving first-registration documents — N610CGV / WA231076 & WA240304", ME, "Wales.Office@landregistry.gov.uk", "Follow-up to Mr Haste on what first-registration instruments survive.", "N610CGV"),
+        ],
+        note: "WA240304 is a second title on the site. Get historical editions and the filed 1982 instruments for both.",
+      },
+      "title.official": { status: "open" },
+    },
+  },
+  {
+    id: "vog",
+    name: "Vale of Glamorgan Council",
+    shortName: "Vale of Glamorgan",
+    sector: "land",
+    track: "welsh-public",
+    role: "Local planning authority; possible Building Preservation Notice failure; successor local government; FOI case 00210772.",
+    holds: "Planning files, BPN/listing consultations, housing development on the former farm, members' code complaints, electoral/land terrier.",
+    emails: [
+      "FoiUnit@valeofglamorgan.gov.uk",
+      "VDavidson@valeofglamorgan.gov.uk",
+      "complaints@valeofglamorgan.gov.uk",
+      "gdcarroll@valeofglamorgan.gov.uk",
+      "cpfranks@valeofglamorgan.gov.uk",
+    ],
+    policies: [
+      { label: "Vale FOI", url: "https://www.valeofglamorgan.gov.uk/en/our_council/Freedom-of-Information.aspx" },
+      { label: "Complaints and compliments", url: "https://www.valeofglamorgan.gov.uk/en/our_council/Complaints-and-Compliments.aspx" },
+      { label: "Members' code of conduct", url: "https://www.valeofglamorgan.gov.uk/en/our_council/Councillors-and-Committees/Councillors/Standards-Committee.aspx" },
+      { label: "PSOW", url: "https://www.ombudsman.wales/how-to-complain/" },
+      { label: "ICO", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes: "FOI 00210772 internal review requested 7 Jul 2026, acknowledged 10 Jul, chased 5 Aug / 30 Aug / 1 Sep — still outstanding. monitoringofficer@ / s151@ / finance@ addresses bounce. Use published officer names. ICO is the next FOI step if the review remains overdue.",
+    foiPolicy: "https://www.valeofglamorgan.gov.uk/en/our_council/Freedom-of-Information.aspx",
+    complaintPolicy: "https://www.valeofglamorgan.gov.uk/en/our_council/Complaints-and-Compliments.aspx",
+    ombudsman: "Public Services Ombudsman for Wales",
+    ombudsmanUrl: "https://www.ombudsman.wales/how-to-complain/",
+    foiContact: "FoiUnit@valeofglamorgan.gov.uk",
+    complaintContact: "VDavidson@valeofglamorgan.gov.uk",
+    overlays: {
+      "foi.submit": { status: "exhausted", reference: "00210772" },
+      "foi.ack": { status: "exhausted", reference: "00210772" },
+      "foi.review": {
+        status: "awaiting",
+        reference: "00210772",
+        note: "Requested 7 Jul 2026, acknowledged 10 Jul. Still outstanding as of 1 Sep 2026. ICO will take an overdue review.",
+        emails: [
+          e("2026-08-30", "out", "Great House Farm, Llandough", ME, "FoiUnit@valeofglamorgan.gov.uk", "Chase of internal review of Case Ref 00210772, requested 7 July 2026.", "00210772"),
+          e("2026-09-01", "out", "Great House Farm, Llandough – Request 00210772 – Internal Review – Formal Chase", ME, "FoiUnit@valeofglamorgan.gov.uk", "Further formal chase of the internal review.", "00210772"),
+        ],
+      },
+      "foi.ico": { status: "open", note: "Review is overdue. ICO complaint is now available." },
+      "complaint.s1": {
+        status: "review",
+        emails: [
+          e("2026-07-27", "out", "Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll (Llandough) – Great House Farm / Church View Close", ME, "complaints@valeofglamorgan.gov.uk", "Corporate complaint about Cllr Carroll's failure to respond."),
+          e("2026-08-12", "in", "RE: Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll", "VDavidson@valeofglamorgan.gov.uk", ME, "Monitoring Officer: corporate complaints policy vs members' code; no evidence of a code breach."),
+          e("2026-08-12", "out", "Re: Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll", ME, "VDavidson@valeofglamorgan.gov.uk", "Accepted the distinction; asked for the basis of the no-breach determination."),
+          e("2026-08-21", "out", "Re: Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll", ME, "VDavidson@valeofglamorgan.gov.uk", "Seeking clarification of the determination that there was no evidence of a Members' Code breach."),
+          e("2026-08-21", "out", "Formal Governance and Integrity Notification — Great House Farm / Ty Mawr, Llandough", ME, "monitoringofficer@valeofglamorgan.gov.uk", "Formal notice of documentary evidence concerning historical identity/title."),
+          e("2026-08-21", "in", "Delivery Status Notification (Failure)", "Mail Delivery Subsystem", ME, "monitoringofficer@, s151@ and finance@ addresses not found."),
+          e("2026-08-24", "in", "RE: Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll", "VDavidson@valeofglamorgan.gov.uk", ME, "Assessment limited to members' code; no further corporate investigation."),
+          e("2026-08-24", "out", "Re: Complaint – Failure to Respond / Failure to Deal Properly with Case – Cllr George Carroll", ME, "VDavidson@valeofglamorgan.gov.uk", "Fundamental point placed on the record."),
+        ],
+        note: "Generic role inboxes bounce. Use VDavidson@ / complaints@. PSOW members' code is the remaining escalation of the Carroll determination.",
+      },
+    },
+  },
+  {
+    id: "nrw",
+    name: "Natural Resources Wales",
+    shortName: "NRW",
+    sector: "land",
+    track: "welsh-public",
+    role: "Environmental / development-planning consultee on the Llandough project.",
+    holds: "Planning-advice files, environmental records (EIR), flooding/drainage, historic-environment consultation.",
+    emails: ["southeastplanning@cyfoethnaturiolcymru.gov.uk"],
+    policies: [
+      { label: "NRW access to information", url: "https://naturalresources.wales/about-us/what-we-do/how-we-work/access-to-information/?lang=en" },
+      { label: "PSOW", url: "https://www.ombudsman.wales/how-to-complain/" },
+    ],
+    notes: "Auto-ack 21 Aug 2026 from South East Planning. Follow up with a numbered EIR if no substantive reply.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-21", "in", "Automatic reply: Llandough Project, Cardiff", "South East Planning <southeastplanning@cyfoethnaturiolcymru.gov.uk>", ME, "Auto-ack: dealing with the enquiry."),
+        ],
+      },
+    },
+  },
+  {
+    id: "pedw",
+    name: "Planning and Environment Decisions Wales",
+    shortName: "PEDW",
+    sector: "land",
+    track: "welsh-public",
+    role: "Successor to the Planning Inspectorate in Wales. Appeal/inquiry records on Llandough development.",
+    holds: "Appeal files, inspector reports, inquiry documents.",
+    emails: ["PEDW.Casework@gov.wales"],
+    policies: [
+      { label: "PEDW", url: "https://www.gov.wales/planning-and-environment-decisions-wales" },
+    ],
+    notes: "dns.wales@planninginspectorate.gov.uk is dead (PINS Wales closed). Use PEDW. Casework FOI/EIR remaining.",
+    overlays: {
+      "enquiry.informal": {
+        status: "bounce",
+        emails: [
+          e("2026-08-21", "in", "Automatic reply: Llandough Project, Cardiff", "dns.wales@planninginspectorate.gov.uk", ME, "This address is no longer in use; Planning Inspectorate in Wales has transferred to PEDW."),
+        ],
+      },
+    },
+  },
+  {
+    id: "companies-house",
+    name: "Companies House",
+    shortName: "Companies House",
+    sector: "regulator",
+    track: "uk-public",
+    role: "Confirm legal existence / succession of BP Properties Ltd, BP Pension Trust Ltd, Western Ground Rents Ltd.",
+    holds: "Incorporation, filing history, charges, dissolution, officer lists.",
+    emails: ["enquiries@companieshouse.gov.uk"],
+    policies: [
+      { label: "Find and update company information", url: "https://find-and-update.company-information.service.gov.uk/" },
+      { label: "Complaints", url: "https://www.gov.uk/government/organisations/companies-house/about/complaints-procedure" },
+    ],
+    notes: "Public search is free and should be done before any letter before claim. FOI is rarely needed.",
+    overlays: {
+      "enquiry.catalogue": { status: "open", note: "Pull filing histories for BP Properties, BP Pension Trust, WGR and any successor." },
+    },
+  },
+  {
+    id: "bp",
+    name: "BP Properties Ltd / BP Pension Trust Ltd",
+    shortName: "BP",
+    sector: "private",
+    track: "private",
+    role: "1987 claimant; current or predecessor registered proprietor of the disputed title; enforced 1988 eviction and demolition.",
+    holds: "Conveyancing files, instructions to agents/bailiffs, board minutes, title pack for WA231076, pension-trustee papers.",
+    emails: ["pensions@bp.com", "ukgeneralenquiries@bp.com"],
+    policies: [
+      { label: "BP privacy / contact", url: "https://www.bp.com/en/global/corporate/privacy-statement.html" },
+      { label: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/" },
+    ],
+    notes: "Formal notice emailed 9 May 2026 to pensions@bp.com and ukgeneralenquiries@bp.com. Identify the current legal person from official copies of WA231076, then a dated preservation letter to the registered proprietor's solicitors and a PAP letter before claim. FCA has been notified as a parallel regulatory track.",
+    overlays: {
+      "preaction.preserve": {
+        status: "sent",
+        emails: [
+          e("2026-05-09", "out", "Formal Notice Follow Up: Resolution of Historical Dispossession and Fraud – Great House Farm, Llandough, Vale of Glamorgan", ME, "pensions@bp.com", "Notice on behalf of the Williams heirs to BP pensions / UK general enquiries."),
+        ],
+      },
+      "preaction.corporate": { status: "open" },
+      "preaction.lbc": { status: "open", note: "Held until the current registered proprietor is named from official copies." },
+    },
+  },
+  {
+    id: "wgr",
+    name: "Western Ground Rents Ltd (or successor)",
+    shortName: "WGR",
+    sector: "private",
+    track: "private",
+    role: "1938/1939 conveyancing predecessor in the BP chain. Evidential / contribution if still extant.",
+    holds: "Historic conveyancing, rentals, plans that never reached Glamorgan Archives.",
+    emails: [],
+    policies: [
+      { label: "Companies House", url: "https://find-and-update.company-information.service.gov.uk/" },
+    ],
+    notes: "Not yet started. Confirm whether WGR still exists as a legal entity before any letter.",
+    overlays: {},
+  },
+  {
+    id: "newbridge",
+    name: "Newbridge Real Estate (Llandough development)",
+    shortName: "Newbridge",
+    sector: "private",
+    track: "developer",
+    role: "Apparent developer of residential units on or adjoining the former Great House Farm.",
+    holds: "Title pack, planning drawings, solicitor's report on title, NHBC.",
+    emails: ["info@newbridgerealestate.co.uk"],
+    policies: [
+      { label: "Newbridge Real Estate", url: "https://www.newbridgerealestate.co.uk/" },
+    ],
+    notes: "Email 21 Aug 2026 putting them on notice of a title defect and the WDTK trail. Follow with a preservation letter to their solicitors once identified.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-21", "out", "Llandough Project, Cardiff", ME, "info@newbridgerealestate.co.uk", "Notice of a defect in land title; family claim of ownership; link to WhatDoTheyKnow 2020_01590_hyb."),
+        ],
+      },
+      "preaction.preserve": { status: "open" },
+    },
+  },
+  {
+    id: "swp",
+    name: "South Wales Police",
+    shortName: "South Wales Police",
+    sector: "justice",
+    track: "police",
+    role: "Enforcement of the 1955/1988 eviction; alleged removal of title documents; deaths-related records.",
+    holds: "Incident logs, pocket books, property registers, complaints files, any 1988 operational order, FOI/SAR stores.",
+    emails: ["information@south-wales.police.uk"],
+    policies: [
+      { label: "SWP FOI", url: "https://www.south-wales.police.uk/rqo/request/foi/" },
+      { label: "SWP subject access", url: "https://www.south-wales.police.uk/rqo/request/sar/" },
+      { label: "Make a complaint", url: "https://www.south-wales.police.uk/advice/advice-and-information/complaints/" },
+      { label: "IOPC", url: "https://www.policeconduct.gov.uk/complaints" },
+      { label: "ICO", url: "https://ico.org.uk/make-a-complaint/" },
+    ],
+    notes: "FOI on the 1983/1990 deaths sent 20 Aug 2026 (auto-ack). SAR and a Schedule 3 complaint about the 1988 eviction are still remaining and high-value. Do not collapse FOI, SAR and PSD into one email.",
+    foiPolicy: "https://www.south-wales.police.uk/rqo/request/foi/",
+    sarPolicy: "https://www.south-wales.police.uk/rqo/request/sar/",
+    complaintPolicy: "https://www.south-wales.police.uk/advice/advice-and-information/complaints/",
+    foiContact: "information@south-wales.police.uk",
+    overlays: {
+      "foi.submit": {
+        status: "sent",
+        emails: [
+          e("2026-08-20", "out", "Freedom of Information Request – Records relating to the deaths of William Buckler (1990) and Mary Doreen Williams (1983)", ME, "information@south-wales.police.uk", "FOIA request for recorded information relating to the two deaths."),
+          e("2026-08-20", "in", "Automatic reply: Freedom of Information Request", "Freedom of Information <Information@south-wales.police.uk>", ME, "Auto-ack from the FOI team. Do not reply to the auto-ack."),
+        ],
+      },
+      "foi.ack": { status: "sent" },
+      "sar.submit": { status: "open", note: "Separate SAR for personal data of named family members — do not mix with the deaths FOI." },
+      "police.psd": { status: "open", note: "Schedule 3 complaint about 1988 enforcement and alleged removal of title documents is still remaining." },
+    },
+  },
+  {
+    id: "iopc",
+    name: "Independent Office for Police Conduct",
+    shortName: "IOPC",
+    sector: "regulator",
+    track: "regulator",
+    role: "Escalation venue for South Wales Police complaint handling.",
+    holds: "Review files once a force complaint is recorded and exhausted/mishandled.",
+    emails: ["enquiries@policeconduct.gov.uk"],
+    policies: [
+      { label: "IOPC complaints", url: "https://www.policeconduct.gov.uk/complaints" },
+    ],
+    notes: "Do not file until a force complaint reference exists, or the force has refused to record one.",
+    overlays: {},
+  },
+  {
+    id: "cps",
+    name: "Crown Prosecution Service (Cymru-Wales)",
+    shortName: "CPS Cymru",
+    sector: "justice",
+    track: "uk-public",
+    role: "Venue for a third-party referral of suspected historical fraud / related offences.",
+    holds: "Any existing case file; victim-liaison correspondence.",
+    emails: ["VictimLiaison.Cymru-Wales@cps.gov.uk"],
+    policies: [
+      { label: "CPS complaints", url: "https://www.cps.gov.uk/publication/complaints" },
+      { label: "CPS FOI", url: "https://www.cps.gov.uk/publication-scheme" },
+      { label: "Victim Liaison", url: "https://www.cps.gov.uk/victims-witnesses" },
+    ],
+    notes: "Referral emailed 3 Sep 2026; auto-ack aiming to acknowledge within 3 working days. Await the substantive victim-liaison reply before chasing.",
+    foiPolicy: "https://www.cps.gov.uk/publication-scheme",
+    complaintPolicy: "https://www.cps.gov.uk/publication/complaints",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-09-03", "out", "Re-Opening of BP vs Buckler 1987", ME, "VictimLiaison.Cymru-Wales@cps.gov.uk", "Formal placing of suspected historical fraud and related criminal conduct before the CPS."),
+          e("2026-09-03", "in", "Automatic reply: External Email - Re-Opening of BP vs Buckler 1987", "Victim Liaison Cymru-Wales", ME, "Aim to acknowledge within 3 working days."),
+        ],
+      },
+    },
+  },
+  {
+    id: "moj",
+    name: "Ministry of Justice / HMCTS / National Services",
+    shortName: "MoJ / HMCTS",
+    sector: "justice",
+    track: "uk-public",
+    role: "Custodian of court administration records for BP Properties Ltd v Buckler (1974/1987). SAR 260803049.",
+    holds: "Cause numbers, daily lists, retention/destruction of county-court files, SAR file 260803049, Lord Chancellor's Department papers.",
+    emails: ["NSUKilo@justice.gov.uk"],
+    wdtk: "https://www.whatdotheyknow.com/request/bp_vs_buckler_1987",
+    policies: [
+      { label: "MoJ FOI", url: "https://www.gov.uk/government/organisations/ministry-of-justice/about/publication-scheme" },
+      { label: "HMCTS data protection", url: "https://www.gov.uk/government/organisations/hm-courts-and-tribunals-service/about/personal-information-charter" },
+      { label: "ICO SAR complaints", url: "https://ico.org.uk/make-a-complaint/data-protection-complaints-to-the-ico/" },
+    ],
+    notes: "WDTK FOI 2025: MoJ did not hold the Alun Michael / Lord Chancellor letters. HMCTS admin-records FOI (1974) was partially successful. SAR 260803049 responded 3 Sep 2026; internal review requested the same day.",
+    foiPolicy: "https://www.gov.uk/government/organisations/ministry-of-justice/about/publication-scheme",
+    sarPolicy: "https://www.gov.uk/government/organisations/hm-courts-and-tribunals-service/about/personal-information-charter",
+    foiContact: "NSUKilo@justice.gov.uk",
+    overlays: {
+      "foi.submit": {
+        status: "exhausted",
+        note: "WDTK FOI to MoJ: information not held. HMCTS 1974 admin-records FOI: partially successful.",
+      },
+      "foi.response": { status: "exhausted" },
+      "foi.review": { status: "open", note: "Available on the 'not held' refusal if the search statement is inadequate." },
+      "sar.submit": { status: "exhausted", reference: "260803049 / 260702090" },
+      "sar.response": {
+        status: "exhausted",
+        reference: "260803049",
+        emails: [
+          e("2026-08-03", "in", "Response to your request (our reference 260702090 - SAR)", "NSUKilo@justice.gov.uk", ME, "SAR 260702090 response; clarification requested.", "260702090"),
+          e("2026-08-03", "out", "Re: Response to your request (our reference 260702090 - SAR)", ME, "NSUKilo@justice.gov.uk", "Clarification supplied for searches.", "260702090"),
+          e("2026-09-03", "in", "Response to your request (our reference 260803049 - SAR)", "NSUKilo@justice.gov.uk", ME, "Attached SAR response.", "260803049"),
+        ],
+      },
+      "sar.review": {
+        status: "review",
+        reference: "260803049",
+        emails: [
+          e("2026-09-03", "out", "Re: Response to your request (our reference 260803049 - SAR)", ME, "NSUKilo@justice.gov.uk", "Internal review requested of the 3 September SAR response. 133 houses about to be developed.", "260803049"),
+        ],
+      },
+    },
+  },
+  {
+    id: "mod",
+    name: "Ministry of Defence",
+    shortName: "MOD",
+    sector: "justice",
+    track: "uk-public",
+    role: "FOI target for any UK Armed Forces involvement in the 1988 dispossession.",
+    holds: "Operational records, tasking, correspondence with South Wales Police / Welsh Office.",
+    emails: ["cio-foi@mod.gov.uk"],
+    wdtk: "https://www.whatdotheyknow.com/request/1988_dispossession_of_great_hous",
+    policies: [
+      { label: "How to make an MOD FOI request", url: "https://www.gov.uk/government/publications/how-to-make-a-freedom-of-information-foi-request" },
+      { label: "ICO", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes: "WDTK FOI; MOD attached FOI2026.09019 in May 2026. Status on WDTK is waiting for you to classify the response. Internal review remains available.",
+    foiPolicy: "https://www.gov.uk/government/publications/how-to-make-a-freedom-of-information-foi-request",
+    overlays: {
+      "foi.submit": { status: "exhausted", reference: "FOI2026.09019" },
+      "foi.response": {
+        status: "replied",
+        reference: "FOI2026.09019",
+        note: "Response received ~29 May 2026. Classify on WDTK and decide whether to request internal review.",
+      },
+      "foi.review": { status: "open" },
+    },
+  },
+  {
+    id: "nactso",
+    name: "National Counter Terrorism Security Office",
+    shortName: "NaCTSO",
+    sector: "justice",
+    track: "uk-public",
+    role: "WDTK FOI target on 'BP vs Buckler 1987'.",
+    holds: "Any CT/protective-security file that happens to name the case (likely none — still exhaust).",
+    emails: [],
+    wdtk: "https://www.whatdotheyknow.com/request/bp_vs_buckler_1987",
+    policies: [
+      { label: "NaCTSO via ProtectUK", url: "https://www.protectuk.police.uk/" },
+      { label: "ICO", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+    ],
+    notes: "WDTK notified new responses on 2 Sep 2026. Read the response, classify, then internal review if the search statement is thin.",
+    overlays: {
+      "foi.submit": { status: "exhausted" },
+      "foi.response": { status: "replied", note: "WDTK 'new response' notices 2 Sep 2026. Open the WDTK thread and classify." },
+      "foi.review": { status: "open" },
+    },
+  },
+  {
+    id: "nca",
+    name: "National Crime Agency",
+    shortName: "NCA",
+    sector: "justice",
+    track: "uk-public",
+    role: "Possible recipient of a suspicious-activity / historical-fraud referral.",
+    holds: "Any recorded referral; SARs (suspicious activity reports) are not disclosable in full.",
+    emails: ["communication@nca.gov.uk"],
+    policies: [
+      { label: "NCA FOI", url: "https://www.nationalcrimeagency.gov.uk/who-we-are/freedom-of-information" },
+      { label: "Action Fraud (reporting)", url: "https://www.actionfraud.police.uk/" },
+    ],
+    notes: "You told NWSSP on 24 Aug 2026 that concerns had been passed to the NCA. Confirm the channel and keep the reference. Action Fraud is the public reporting portal for fraud.",
+    overlays: {
+      "enquiry.informal": { status: "sent", note: "Referral mentioned in correspondence with Tim Knifton (NWSSP) on 24 Aug 2026. Confirm NCA/Action Fraud reference numbers." },
+    },
+  },
+  {
+    id: "action-fraud",
+    name: "Action Fraud / City of London Police",
+    shortName: "Action Fraud",
+    sector: "justice",
+    track: "uk-public",
+    role: "National reporting portal for fraud. Creates a recorded crime-report number the CPS/NCA can be pointed at.",
+    holds: "NFRC reports.",
+    emails: [],
+    policies: [
+      { label: "Report fraud", url: "https://www.actionfraud.police.uk/" },
+    ],
+    notes: "No Gmail correspondence located. Filing a numbered report is a remaining, low-cost avenue before any private prosecution talk.",
+    overlays: {},
+  },
+  {
+    id: "coroner",
+    name: "South Wales Central Coroner (RCT)",
+    shortName: "Coroner",
+    sector: "health",
+    track: "coroner",
+    role: "Custodian of inquest/referral records for deaths in the Cardiff & Vale area (post-reorganisation).",
+    holds: "Electronic system from a later date; no 1983/1990 referrals located.",
+    emails: ["CoronerAdmin@rctcbc.gov.uk", "Beverley.Morgan@rctcbc.gov.uk"],
+    policies: [
+      { label: "Chief Coroner's guidance", url: "https://www.gov.uk/government/collections/chief-coroner-guidance-law-sheets-and-reports" },
+    ],
+    notes: "FOI does not apply to coroners. Bev Morgan confirmed the system stores no 1983/1990 referrals; pre-2002 Cardiff & Vale files are a historical-location question. That archive-location chase is the remaining avenue.",
+    overlays: {
+      "coroner.interested": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-20", "out", "FOI / Records Request – Deaths of William (Billy) Buckler (1990) and Mary Doreen Williams (1983)", ME, "coroneradmin@rctcbc.gov.uk", "Request as FOI and as interested person."),
+          e("2026-08-21", "in", "RE: FOI / Records Request", "Coroner Admin <CoronerAdmin@rctcbc.gov.uk>", ME, "Coroner is not a local government officer; FOI does not apply."),
+          e("2026-08-21", "out", "Re: FOI / Records Request", ME, "CoronerAdmin@rctcbc.gov.uk", "Accepted FOI does not apply; recast as interested-person request."),
+          e("2026-08-21", "in", "RE: FOI / Records Request", "Coroner Admin", ME, "Unable to locate any records on the system."),
+          e("2026-08-25", "in", "RE: FOI / Records Request", "Beverley.Morgan@rctcbc.gov.uk", ME, "System does not store referrals received in 1983 or 1990."),
+          e("2026-08-26", "out", "Re: FOI / Records Request", ME, "Beverley.Morgan@rctcbc.gov.uk", "Distinction important; forensic reconstruction of BP v Buckler circumstances."),
+        ],
+      },
+      "coroner.archive": { status: "open", note: "Ask where pre-2002 Cardiff & Vale coroner files were stored and the destruction/transfer record." },
+    },
+  },
+  {
+    id: "fca",
+    name: "Financial Conduct Authority",
+    shortName: "FCA",
+    sector: "regulator",
+    track: "uk-public",
+    role: "Regulatory concern about BP Pension Trust / BP Properties historical affairs and the live residential development.",
+    holds: "Consumer-query case files 212515385 and 212515386.",
+    emails: ["consumer.queries@fca.org.uk"],
+    policies: [
+      { label: "FCA consumer contact", url: "https://www.fca.org.uk/consumers/contact-fca" },
+      { label: "FCA FOI", url: "https://www.fca.org.uk/freedom-information" },
+      { label: "FCA complaints (about the FCA)", url: "https://www.fca.org.uk/about/complaints-scheme" },
+    ],
+    notes: "Two queries 3 Sep 2026; auto case refs issued. Await the case officer. FOI to the FCA about what they hold on BP Pension Trust is a separate remaining avenue.",
+    foiPolicy: "https://www.fca.org.uk/freedom-information",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        reference: "212515385 / 212515386",
+        emails: [
+          e("2026-09-03", "out", "Former Great House Farm, Llandough — proposed/current residential development and disputed House Plot", ME, "consumer.queries@fca.org.uk", "Regulatory concern about development on disputed land."),
+          e("2026-09-03", "out", "BP vs Buckler 1987 - Reopened Case", ME, "consumer.queries@fca.org.uk", "Regulatory concern about historical affairs of BP Pension Trust / BP Properties Ltd."),
+          e("2026-09-03", "in", "Thank you your query has been received.", "noreply@fca.org.uk", ME, "Case Ref 212515385."),
+          e("2026-09-03", "in", "Thank you your query has been received.", "noreply@fca.org.uk", ME, "Case Ref 212515386."),
+        ],
+      },
+      "foi.submit": { status: "open", note: "Separate FOI: what the FCA holds on BP Pension Trust Ltd / BP Properties Ltd." },
+    },
+  },
+  {
+    id: "cavuhb",
+    name: "Cardiff and Vale University Health Board",
+    shortName: "CAVUHB",
+    sector: "health",
+    track: "nhs",
+    role: "Llandough Hospital records of William Buckler (1990) and Mary Doreen Williams (1983).",
+    holds: "Paper/microfilm/digital health records; retention/destruction logs.",
+    emails: ["CAV.AccessToRecords@wales.nhs.uk"],
+    policies: [
+      { label: "NHS Wales access to health records", url: "https://www.nhs.uk/using-the-nhs/about-the-nhs/how-to-access-your-health-records/" },
+      { label: "CAVUHB FOI", url: "https://cavuhb.nhs.wales/about-us/freedom-of-information/" },
+    ],
+    notes: "Access-to-records form sent by Bernice Wheeler 21 Aug 2026. Returning the completed form is the remaining step. FOI will not yield clinical records.",
+    overlays: {
+      "health.form": {
+        status: "awaiting",
+        emails: [
+          e("2026-08-20", "out", "Access to Deceased Health Records / FOI Request – William Buckler (1990) and Mary Doreen Williams (1983)", ME, "CAV.AccessToRecords@wales.nhs.uk", "Request for health records of the two deceased."),
+          e("2026-08-21", "in", "Re: Access to Deceased Health Records / FOI Request", "CAV.AccessToRecords@wales.nhs.uk", ME, "Application form and cover letter from Bernice Wheeler, Bereavement/Access to records supervisor."),
+        ],
+        note: "Form issued. Return it with proof of standing.",
+      },
+    },
+  },
+  {
+    id: "medical-examiner",
+    name: "Medical Examiner Service (South Wales Central)",
+    shortName: "Medical Examiner",
+    sector: "health",
+    track: "nhs",
+    role: "Modern service; does not hold 1983/1990 records.",
+    holds: "Nothing for these deaths. Useful only for the written confirmation of that fact.",
+    emails: ["SouthWalesCentral.MedicalExaminersOffice@wales.nhs.uk"],
+    policies: [
+      { label: "Medical Examiner Service", url: "https://www.gov.uk/government/publications/the-national-medical-examiner-system-in-england-and-wales" },
+    ],
+    notes: "Michelle confirmed no records and no knowledge of these patients. Internal-review request was forwarded to NWSSP IG. This avenue is largely depleted; keep the written confirmation.",
+    overlays: {
+      "enquiry.informal": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-20", "out", "Enquiry regarding historical deaths – William Buckler (1990) and Mary Doreen Williams (1983)", ME, "southwalescentral.medicalexaminersoffice@wales.nhs.uk", "Enquiry whether any records held."),
+          e("2026-08-21", "in", "Re: Enquiry regarding historical deaths", "SouthWalesCentral.MedicalExaminersOffice@wales.nhs.uk", ME, "Do not hold records dating this far; data protection would not allow release if they did."),
+          e("2026-08-21", "out", "Re: Enquiry regarding historical deaths", ME, "SouthWalesCentral.MedicalExaminersOffice@wales.nhs.uk", "Internal review requested."),
+          e("2026-08-21", "in", "Re: Enquiry regarding historical deaths", "SouthWalesCentral.MedicalExaminersOffice@wales.nhs.uk", ME, "Would not hold any records whatsoever. Contact NWSSP.complaints@wales.nhs.uk."),
+        ],
+      },
+    },
+  },
+  {
+    id: "nwssp",
+    name: "NHS Wales Shared Services Partnership (Information Governance)",
+    shortName: "NWSSP IG",
+    sector: "health",
+    track: "nhs",
+    role: "FOI/IG lead who inherited the medical-examiner enquiry.",
+    holds: "IG advice; confirmation of the correct legal position on historic deaths.",
+    emails: ["Tim.Knifton@wales.nhs.uk", "NWSSP.complaints@wales.nhs.uk"],
+    policies: [
+      { label: "NWSSP FOI", url: "https://nwssp.nhs.wales/our-services/information-services/freedom-of-information/" },
+    ],
+    notes: "Tim Knifton (24 Aug 2026) gave a clear, helpful written confirmation of the legal position. Largely depleted. Complaints mailbox remains if you need a formal complaint reference.",
+    overlays: {
+      "enquiry.informal": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-24", "in", "FW: Enquiry regarding historical deaths", "Tim.Knifton@wales.nhs.uk", ME, "FOI contact; explained the position on the original request."),
+          e("2026-08-24", "out", "Re: FW: Enquiry regarding historical deaths", ME, "Tim.Knifton@wales.nhs.uk", "Thanks; concerns also passed to the NCA."),
+          e("2026-08-24", "in", "RE: FW: Enquiry regarding historical deaths", "Tim.Knifton@wales.nhs.uk", ME, "Confirmed the position as set out."),
+          e("2026-08-24", "out", "Re: FW: Enquiry regarding historical deaths", ME, "Tim.Knifton@wales.nhs.uk", "One important clarification before closing."),
+          e("2026-08-24", "in", "RE: FW: Enquiry regarding historical deaths", "Tim.Knifton@wales.nhs.uk", ME, "Point-by-point confirmation (responses in red)."),
+        ],
+      },
+    },
+  },
+  {
+    id: "cardiff-registrars",
+    name: "Cardiff Register Office",
+    shortName: "Cardiff Registrars",
+    sector: "health",
+    track: "welsh-public",
+    role: "Holds the death registration for William Buckler (1990).",
+    holds: "Death registers; indexes.",
+    emails: ["registrars@cardiff.gov.uk", "kdenham@cardiff.gov.uk"],
+    policies: [
+      { label: "GRO / death certificates", url: "https://www.gov.uk/order-copy-birth-death-marriage-certificate" },
+    ],
+    notes: "Karen Denham confirmed they hold William Buckler's record (21 Aug 2026). Mary's 1983 entry may sit with Vale or GRO. Order the certified copies; ask GRO about March 1983 anomalies.",
+    overlays: {
+      "enquiry.informal": {
+        status: "replied",
+        emails: [
+          e("2026-08-20", "out", "Application for copy death certificates – William Buckler (1990) and Mary Doreen Williams (1983)", ME, "registrars@cardiff.gov.uk", "Certified copies requested."),
+          e("2026-08-21", "in", "RE: Application for copy death certificates", "kdenham@cardiff.gov.uk", ME, "Index search confirms Cardiff holds William Buckler's record."),
+          e("2026-08-21", "out", "Re: Application for copy death certificates", ME, "kdenham@cardiff.gov.uk", "Please ensure the record is not destroyed; asking about March 1983 anomalies for Nan."),
+        ],
+      },
+    },
+  },
+  {
+    id: "vog-registrars",
+    name: "Vale of Glamorgan Registration Service",
+    shortName: "Vale Registrars",
+    sector: "health",
+    track: "welsh-public",
+    role: "Possible holder of Mary Doreen Williams 1983 death registration if registered locally rather than in Cardiff.",
+    holds: "Death registers.",
+    emails: ["RegistrationService@valeofglamorgan.gov.uk"],
+    policies: [
+      { label: "Vale registration", url: "https://www.valeofglamorgan.gov.uk/en/living/registration/Registration-Service.aspx" },
+    ],
+    notes: "Copied on the 20 Aug 2026 certificate request. Chase if Cardiff cannot produce Mary's entry.",
+    overlays: {
+      "enquiry.informal": { status: "sent" },
+    },
+  },
+  {
+    id: "doughty-mp",
+    name: "Stephen Doughty MP",
+    shortName: "Stephen Doughty MP",
+    sector: "elected",
+    track: "elected",
+    role: "Constituency MP. Can chase departments and sponsor a PHSO complaint.",
+    holds: "Casework file.",
+    emails: ["stephen.doughty.mp@parliament.uk"],
+    policies: [
+      { label: "PHSO — MP complaints about UK government", url: "https://www.ombudsman.org.uk/making-complaint" },
+      { label: "Parliamentary privilege / how to contact an MP", url: "https://www.parliament.uk/get-involved/contact-an-mp-or-lord/contact-your-mp/" },
+    ],
+    notes: "Copied on the Vale/Carroll letter 28 Aug 2026. Complaint about non-response 27 Jul; office replied 5 Aug (systems search) and 20 Aug (further enquiries in train). A PHSO referral of HMCTS is what they have been asked to do. One specific chase-ask remains more effective than a further dossier.",
+    overlays: {
+      "political.constituency": {
+        status: "awaiting",
+        emails: [
+          e("2026-05-29", "in", "Automatic reply: FORMAL DISCLOSURE NOTICE & LITIGATION HOLD", "stephen.doughty.mp@parliament.uk", ME, "Auto-ack."),
+          e("2026-05-31", "out", "Re: Automatic reply: FORMAL DISCLOSURE NOTICE & LITIGATION HOLD", ME, "stephen.doughty.mp@parliament.uk", "Address 5 Robin Hill, Dinas Powys CF64 4TF. Llandough home since 1667."),
+          e("2026-06-25", "in", "Automatic reply: Complaint of maladministration – defective notice, enforcement process, and loss of opportunity (Great House Farm, Llandough)", "stephen.doughty.mp@parliament.uk", ME, "Auto-ack."),
+          e("2026-06-25", "out", "Re: Automatic reply: Complaint of maladministration", ME, "stephen.doughty.mp@parliament.uk", "Supplied name, address, phone, Vale reference for the PHSO complaint."),
+          e("2026-07-27", "out", "Complaint - Great House Farm, Llandough", ME, "stephen.doughty.mp@parliament.uk", "Formal complaint about the office's failure to provide any substantive response."),
+          e("2026-08-05", "in", "RE: Complaint - Great House Farm, Llandough", "stephen.doughty.mp@parliament.uk", ME, "Sorry you have not received a reply; systems searched; auto-replies had gone out."),
+          e("2026-08-05", "out", "Re: Complaint - Great House Farm, Llandough", ME, "stephen.doughty.mp@parliament.uk", "Now in communications; attached material on concealment in the court papers."),
+          e("2026-08-20", "in", "RE: Complaint - Great House Farm, Llandough", "stephen.doughty.mp@parliament.uk", ME, "Further enquiries made on your behalf; will be in touch once a full response has been prepared."),
+          e("2026-08-28", "out", "Great House Farm, Llandough", ME, "stephen.doughty.mp@parliament.uk", "Joint letter with Cllr Carroll on institutional dysfunction."),
+        ],
+        note: "20 Aug 2026: office said further enquiries are in train. Chase the PHSO/HMCTS referral (C-2205633) as the single ask.",
+      },
+    },
+  },
+  {
+    id: "cllr-carroll",
+    name: "Cllr George Carroll (Llandough)",
+    shortName: "Cllr Carroll",
+    sector: "elected",
+    track: "elected",
+    role: "Ward member. Members' code complaint already raised with Vale monitoring.",
+    holds: "Ward casework.",
+    emails: ["gdcarroll@valeofglamorgan.gov.uk"],
+    policies: [
+      { label: "Vale councillors", url: "https://www.valeofglamorgan.gov.uk/en/our_council/Councillors-and-Committees/Councillors/Councillors.aspx" },
+      { label: "PSOW (members' code)", url: "https://www.ombudsman.wales/how-to-complain/" },
+    ],
+    notes: "Letter 28 Aug 2026. Monitoring officer determined no code-of-conduct breach — that determination was challenged on 21 Aug. PSOW members' code remains available.",
+    overlays: {
+      "political.constituency": {
+        status: "sent",
+        emails: [
+          e("2026-08-28", "out", "Great House Farm, Llandough", ME, "gdcarroll@valeofglamorgan.gov.uk", "Joint letter with Stephen Doughty MP."),
+        ],
+      },
+    },
+  },
+  {
+    id: "cllr-franks",
+    name: "Cllr Christopher Franks",
+    shortName: "Cllr Franks",
+    sector: "elected",
+    track: "elected",
+    role: "Vale councillor; family acquaintance. Has stated he cannot assist in that role.",
+    holds: "None expected.",
+    emails: ["cpfranks@valeofglamorgan.gov.uk"],
+    policies: [
+      { label: "Vale councillors", url: "https://www.valeofglamorgan.gov.uk/en/our_council/Councillors-and-Committees/Councillors/Councillors.aspx" },
+    ],
+    notes: "Replied 1 Sep 2026: not sure how he can assist as a Vale councillor. Political avenue with this member is effectively depleted; do not spend further cycles.",
+    overlays: {
+      "political.constituency": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-20", "out", "Good God", ME, "cpfranks@valeofglamorgan.gov.uk", "Personal approach as Gale Smith's grandson."),
+          e("2026-09-01", "in", "RE: Good God", "cpfranks@valeofglamorgan.gov.uk", ME, "Not sure how I can assist in my role as a Vale Councillor."),
+          e("2026-09-01", "out", "Re: Good God", ME, "cpfranks@valeofglamorgan.gov.uk", "Position acknowledged."),
+        ],
+      },
+    },
+  },
+  {
+    id: "ukgovwales",
+    name: "Secretary of State for Wales / UK Government in Wales",
+    shortName: "Wales Office",
+    sector: "elected",
+    track: "uk-public",
+    role: "UK government department for Wales. Political and FOI target for Welsh Office 1988 papers that did not transfer to Cadw/TNA.",
+    holds: "Wales Office / Welsh Office inherited files; ministerial correspondence.",
+    emails: ["correspondence@ukgovwales.gov.uk"],
+    policies: [
+      { label: "Wales Office", url: "https://www.gov.uk/government/organisations/office-of-the-secretary-of-state-for-wales" },
+      { label: "FOI to UK government", url: "https://www.gov.uk/make-a-freedom-of-information-request" },
+      { label: "PHSO", url: "https://www.ombudsman.org.uk/making-complaint" },
+    ],
+    notes: "Letter 29 Aug 2026 as Williams heirs. Treat as both correspondence and a prompt to issue a numbered FOI for Welsh Office 1988 files.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-29", "out", "Williams Heirs, Great House Farm, Llandough (Est. 1667)", ME, "correspondence@ukgovwales.gov.uk", "Letter to the Secretary of State concerning Great House Farm / Ty Mawr."),
+        ],
+      },
+      "foi.submit": { status: "open", note: "Numbered FOI for Welsh Office 1988 listing/eviction papers still remaining." },
+    },
+  },
+  {
+    id: "senedd-culture",
+    name: "Senedd Culture, Communications, Cymraeg and Sport Committee",
+    shortName: "Senedd Culture Committee",
+    sector: "elected",
+    track: "political-committee",
+    role: "Received the Cadw forensic review. Declined to take the individual dispute forward.",
+    holds: "Submission and the committee's written position.",
+    emails: ["SeneddDiwylliant@senedd.cymru"],
+    policies: [
+      { label: "Senedd committees", url: "https://senedd.wales/committees" },
+      { label: "Senedd petitions", url: "https://petitions.senedd.wales/" },
+    ],
+    notes: "Committee explicitly will not adjudicate. That specific committee avenue is depleted. A Senedd petition / different committee (Public Accounts, Local Government) remains.",
+    overlays: {
+      "political.committee": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-11", "in", "Acknowledgement from the Culture, Communications, Cymraeg and Sport Committee", "SeneddDiwylliant@senedd.cymru", ME, "Acknowledged the forensic review; committee does not adjudicate individual disputes."),
+          e("2026-08-11", "out", "Re: Acknowledgement", ME, "SeneddDiwylliant@senedd.cymru", "Clarified the ask is records-management / heritage-duty, not title determination."),
+          e("2026-08-12", "in", "RE: Acknowledgement", "SeneddDiwylliant@senedd.cymru", ME, "Confirmed the committee will not take the matter forward."),
+          e("2026-08-12", "out", "Re: Acknowledgement", ME, "SeneddDiwylliant@senedd.cymru", "Position placed on the record."),
+        ],
+      },
+      "political.petition": { status: "open" },
+    },
+  },
+  {
+    id: "welsh-gov-foi",
+    name: "Welsh Government (central FOI, not Cadw)",
+    shortName: "Welsh Government FOI",
+    sector: "elected",
+    track: "welsh-public",
+    role: "Central WG may hold Welsh Office inherited papers, ministerial submissions, and complaints about Cadw that sit outside ATISN 27021.",
+    holds: "Central records, MAG, complaints about Cadw, 1988 Welsh Office files not with Cadw.",
+    emails: ["FreedomOfInformation@gov.wales"],
+    policies: [
+      { label: "Welsh Government FOI", url: "https://www.gov.wales/freedom-information" },
+      { label: "Complaints", url: "https://www.gov.wales/complain-about-welsh-government" },
+      { label: "PSOW", url: "https://www.ombudsman.wales/how-to-complain/" },
+    ],
+    notes: "Cadw's ATISN is not a search of the whole of Welsh Government. A separate central FOI for Welsh Office 1988 files remains.",
+    foiPolicy: "https://www.gov.wales/freedom-information",
+    foiContact: "FreedomOfInformation@gov.wales",
+    ombudsman: "Public Services Ombudsman for Wales",
+    ombudsmanUrl: "https://www.ombudsman.wales/how-to-complain/",
+    overlays: {
+      "foi.submit": { status: "open", note: "Do not assume ATISN 27021 searched MAG / Welsh Office inherited series." },
+    },
+  },
+  {
+    id: "ico",
+    name: "Information Commissioner's Office",
+    shortName: "ICO",
+    sector: "regulator",
+    track: "regulator",
+    role: "Statutory escalation for FOI/EIR and SAR. This is how several other trees terminate.",
+    holds: "Decision notices; case files once a complaint is accepted.",
+    emails: ["icocasework@ico.org.uk"],
+    policies: [
+      { label: "FOI/EIR complaints", url: "https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/" },
+      { label: "Data-protection complaints", url: "https://ico.org.uk/make-a-complaint/data-protection-complaints-to-the-ico/" },
+      { label: "For the public — official information", url: "https://ico.org.uk/for-the-public/official-information/" },
+    ],
+    notes: "Case IC-546505-W6P0. Correspondence 21 Jul 2026 (subject 'Buckler vs United Kingdom'); ICO ack same day; Ella Cuthbert (Lead Case Officer) sent a letter 10 Aug 2026. Read that letter before filing a second complaint. A numbered FOI complaint about Vale 00210772 (overdue internal review) remains available as a separate case type from whatever IC-546505 decided.",
+    overlays: {
+      "regulator-own.ready": {
+        status: "replied",
+        reference: "IC-546505-W6P0",
+        emails: [
+          e("2026-07-21", "out", "Buckler vs United Kingdom", ME, "icocasework@ico.org.uk", "Urgent assistance obtaining historic records required for the family's case."),
+          e("2026-07-21", "in", "We have received your email. Rydym wedi derbyn eich ebost", "icocasework@ico.org.uk", ME, "ICO confirmed receipt."),
+          e("2026-08-10", "in", "ICO Case Reference: IC-546505-W6P0", "icocasework@ico.org.uk", ME, "Ella Cuthbert, Lead Case Officer: letter attached in response to 21 July correspondence.", "IC-546505-W6P0"),
+        ],
+        note: "Open the 10 Aug letter. If IC-546505 was not a Vale/Cadw FOI complaint, file a fresh official-information complaint on 00210772 (review overdue since July).",
+      },
+    },
+  },
+  {
+    id: "psow",
+    name: "Public Services Ombudsman for Wales",
+    shortName: "PSOW",
+    sector: "regulator",
+    track: "regulator",
+    role: "Maladministration escalation for Welsh public bodies (Cadw, Vale, RCAHMW, health boards, NRW).",
+    holds: "Complaint files once the body's procedure is exhausted.",
+    emails: ["ask@ombudsman.wales"],
+    policies: [
+      { label: "How to complain", url: "https://www.ombudsman.wales/how-to-complain/" },
+      { label: "Time limits", url: "https://www.ombudsman.wales/" },
+    ],
+    notes: "ask@ombudsman.wales replied 9 May 2026: they do not accept complaints into that inbox — use the published online form. Do not treat the inbox bounce as a filed complaint. File via ombudsman.wales once Stage 1/2 at the body is exhausted (Vale role-address bounces are themselves evidence).",
+    overlays: {
+      "regulator-own.ready": {
+        status: "bounce",
+        emails: [
+          e("2026-05-09", "out", "Formal Notice Follow Up: Resolution of Historical Dispossession and Fraud – Great House Farm, Llandough, Vale of Glamorgan", ME, "ask@ombudsman.wales", "Formal notice BCC'd to the Ombudsman's ask inbox."),
+          e("2026-05-09", "in", "RE: Formal Notice Follow Up: Resolution of Historical Dispossession and Fraud – Great House Farm, Llandough, Vale of Glamorgan", "ask@ombudsman.wales", ME, "We do not accept complaints into this inbox. Use the online form."),
+        ],
+        note: "Wrong channel. Remaining: file a numbered complaint via https://www.ombudsman.wales/how-to-complain/ once Vale/Cadw stage 1/2 is exhausted.",
+      },
+    },
+  },
+  {
+    id: "phso",
+    name: "Parliamentary and Health Service Ombudsman",
+    shortName: "PHSO",
+    sector: "regulator",
+    track: "regulator",
+    role: "UK-government maladministration (MoJ, MOD, Wales Office, HMLR). Usually requires an MP referral.",
+    holds: "Complaint files.",
+    emails: ["Phso.Enquiries@ombudsman.org.uk"],
+    policies: [
+      { label: "Making a complaint", url: "https://www.ombudsman.org.uk/making-complaint" },
+    ],
+    notes: "Case C-2205633. Maladministration complaint 25 Jun 2026; case opened 16 Jul; 20 Jul they can consider HMCTS if referred by the MP, and cannot access external websites. Chase Stephen Doughty for the HMCTS referral. A fresh pack attaching the 3 Sep SAR review (260803049) is remaining.",
+    overlays: {
+      "regulator-own.ready": {
+        status: "awaiting",
+        reference: "C-2205633",
+        emails: [
+          e("2026-06-25", "out", "Complaint of maladministration – defective notice, enforcement process, and loss of opportunity (Great House Farm, Llandough)", ME, "Phso.Enquiries@ombudsman.org.uk", "Maladministration complaint; Stephen Doughty MP copied."),
+          e("2026-06-25", "in", "Automatic reply: Complaint of maladministration – defective notice, enforcement process, and loss of opportunity (Great House Farm, Llandough)", "Phso.Enquiries@ombudsman.org.uk", ME, "Auto-ack of the complaint email."),
+          e("2026-07-16", "in", "PHSO Case Ref: C-2205633", "Phso.Enquiries@ombudsman.org.uk", ME, "Thank you for your email headed complaint of maladministration.", "C-2205633"),
+          e("2026-07-16", "out", "Re: PHSO Case Ref: C-2205633", ME, "Phso.Enquiries@ombudsman.org.uk", "Clarified: not asking PHSO to review a judicial decision."),
+          e("2026-07-20", "in", "RE: PHSO Case Ref: C-2205633", "Phso.Enquiries@ombudsman.org.uk", ME, "We can consider complaints about HMCTS referred by your MP. Unable to access websites you may create.", "C-2205633"),
+          e("2026-07-20", "out", "Re: PHSO Case Ref: C-2205633", ME, "Phso.Enquiries@ombudsman.org.uk", "Will chase the MP for a response."),
+        ],
+        note: "Gate is an MP referral of HMCTS. Doughty's office said on 20 Aug that further enquiries are in train.",
+      },
+    },
+  },
+  {
+    id: "welsh-water",
+    name: "Dŵr Cymru Welsh Water",
+    shortName: "Welsh Water",
+    sector: "utility",
+    track: "utility",
+    role: "Possible holder of maps, sewer records, historical connections at Great House Farm.",
+    holds: "GIS, customer accounts, historical network records. EIR for environmental information.",
+    emails: ["CustomerCareTeam@dwrcymru.com"],
+    policies: [
+      { label: "Welsh Water contact", url: "https://www.dwrcymru.com/en/help-and-advice/contact-us" },
+      { label: "EIR / information requests", url: "https://www.dwrcymru.com/en/about-us/governance/publication-scheme" },
+      { label: "Consumer Council for Water", url: "https://www.ccwater.org.uk/make-a-complaint/" },
+    ],
+    notes: "Mail 92994223/01 — further review of records relating to Great House Farm completed; GSS £20 offered 3 Sep 2026. Records search is substantially depleted; EIR for specific historic maps can still be framed if the review did not cover them.",
+    foiContact: "CustomerCareTeam@dwrcymru.com",
+    overlays: {
+      "enquiry.informal": {
+        status: "exhausted",
+        reference: "92994223/01",
+        emails: [
+          e("2026-09-03", "in", "Welsh Water - Mail reference: 92994223/01", "CustomerCareTeam@dwrcymru.com", ME, "Further review of records relating to Great House Farm (Ty Mawr); searches across operating systems.", "92994223/01"),
+          e("2026-09-03", "out", "Re: Welsh Water - Mail reference: 92994223/01", ME, "CustomerCareTeam@dwrcymru.com", "Thanks for the further searches."),
+        ],
+      },
+      "utility.gss": {
+        status: "replied",
+        reference: "92994223/01",
+        emails: [
+          e("2026-09-03", "out", "Re: Welsh Water - Mail reference: 92994223/01", ME, "CustomerCareTeam@dwrcymru.com", "Forwarding address for the £20 GSS payment: 5 Robin Hill, Dinas Powys CF64 4TF."),
+        ],
+      },
+      "foi.submit": { status: "open", note: "If the customer-care review did not cover historic mains/sewer maps, frame a numbered EIR." },
+    },
+  },
+  {
+    id: "media-wales",
+    name: "Media Wales / South Wales Echo (Reach plc)",
+    shortName: "South Wales Echo",
+    sector: "media",
+    track: "media",
+    role: "Contemporary coverage of the family and of William Buckler's 1990 death. Not an FOIA body.",
+    holds: "Cuttings, unpublished stills, assignment notes, library.",
+    emails: ["tryst.williams@reachplc.com", "wayne.davies@reachplc.com", "james.arnott@reachplc.com"],
+    policies: [
+      { label: "Reach plc privacy", url: "https://www.reachplc.com/legal/privacy" },
+      { label: "IPSO", url: "https://www.ipso.co.uk/complain/" },
+      { label: "Welsh Newspapers Online", url: "https://newspapers.library.wales/" },
+    ],
+    notes: "Tryst Williams auto-ooo 20 Aug 2026; you replied 2 Sep. If the newsroom cannot help, go to NLW / British Newspaper Archive. IPSO is not a records route.",
+    overlays: {
+      "media.newsroom": {
+        status: "awaiting",
+        emails: [
+          e("2026-08-20", "in", "Thanks for your email Re: Request for archive material / FOI-style enquiry – South Wales Echo coverage of William Buckler (1990)", "tryst.williams@reachplc.com", ME, "Out of office until Monday; Wayne Davies / James Arnott / newsdesk."),
+          e("2026-09-02", "out", "Re: Thanks for your email Re: Request for archive material", ME, "tryst.williams@reachplc.com", "Follow-up on the archive request."),
+        ],
+      },
+    },
+  },
+  {
+    id: "itv-wales",
+    name: "ITV Wales / ITV plc",
+    shortName: "ITV Wales",
+    sector: "media",
+    track: "media",
+    role: "Contemporary broadcast coverage of the 1988 demolition; footage long understood to have been suppressed or not retained.",
+    holds: "Newsfilm, assignment logs, legal-hold records if any.",
+    emails: ["cymruwales.news@itv.com"],
+    policies: [
+      { label: "ITV contact", url: "https://www.itv.com/contact" },
+      { label: "Ofcom (broadcast standards, not records)", url: "https://www.ofcom.org.uk/complaints" },
+    ],
+    notes: "itvwales@itv.com bounced 21 Jul 2026. A dated archive enquiry to cymruwales.news@itv.com plus a request for any retention/destruction record is remaining. Ofcom will not order them to produce 1988 rushes.",
+    overlays: {
+      "media.newsroom": {
+        status: "bounce",
+        emails: [
+          e("2026-07-21", "out", "Buckler vs United Kingdom", ME, "itvwales@itv.com", "BCC of the records/oversight letter."),
+          e("2026-07-21", "in", "Delivery Status Notification (Failure)", "Mail Delivery Subsystem", ME, "Address not found: itvwales@itv.com."),
+        ],
+        note: "Resend to cymruwales.news@itv.com asking specifically for 1988 demolition assignment logs / newsfilm retention.",
+      },
+    },
+  },
+  {
+    id: "platfform",
+    name: "Platfform Wellbeing",
+    shortName: "Platfform",
+    sector: "health",
+    track: "private",
+    role: "Counselling organisation contacted about the family impact. Not a records-holder on title.",
+    holds: "Any case notes they create from the engagement.",
+    emails: ["hello@platfformwellbeing.com"],
+    policies: [
+      { label: "Platfform", url: "https://platfform.org/" },
+    ],
+    notes: "Correspondence 4 Sep 2026. They cannot provide a legal report. Treat as support, not as an information avenue. SAR would only cover notes they themselves create.",
+    overlays: {
+      "enquiry.informal": {
+        status: "replied",
+        emails: [
+          e("2026-09-04", "out", "Williams/Buckler Family", ME, "hello@platfformwellbeing.com", "Whistleblowing from a safe distance; family incident."),
+          e("2026-09-04", "in", "RE: Williams/Buckler Family", "hello@platfformwellbeing.com", ME, "Counselling organisation; cannot determine historical truth."),
+          e("2026-09-04", "out", "Re: Williams/Buckler Family", ME, "hello@platfformwellbeing.com", "Clarifying what is and is not being asked of them."),
+        ],
+      },
+    },
+  },
+  {
+    id: "bangor",
+    name: "Bangor University (Prof. Gareth Williams)",
+    shortName: "Bangor / G.J. Williams",
+    sector: "archive",
+    track: "archive",
+    role: "Academic contact on Williams / Great House Farm history.",
+    holds: "Possibly private research notes; not an FOIA target for this purpose unless the university itself holds a collection.",
+    emails: ["g.j.williams@bangor.ac.uk"],
+    policies: [
+      { label: "Bangor FOI", url: "https://www.bangor.ac.uk/governance-and-compliance/freedom-of-information" },
+    ],
+    notes: "Email 30 Aug 2026; out-of-office until 1 Sep. Chase if no reply. University FOI only if a named collection is in the university archive.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-30", "out", "Williams, Great House Farm, Llandough", ME, "g.j.williams@bangor.ac.uk", "Academic enquiry."),
+          e("2026-08-30", "in", "Automatic reply: Williams, Great House Farm, Llandough", "g.j.williams@bangor.ac.uk", ME, "Annual leave, returning 1 Sep."),
+        ],
+      },
+    },
+  },
+  {
+    id: "piddington",
+    name: "Piddington Parish Council",
+    shortName: "Piddington PC",
+    sector: "archive",
+    track: "archive",
+    role: "Cedwyn / Cedfin toponym enquiry — possible parallel manorial naming, not a defendant.",
+    holds: "Parish records, local history.",
+    emails: ["piddington.parish.clerk@piddingtonpc.org"],
+    policies: [
+      { label: "Piddington PC", url: "https://www.piddingtonpc.org/" },
+    ],
+    notes: "Email 24 Aug 2026 (Cedwyn Estate alias Llandough). Informal only.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-24", "out", "Cedwyn Estate (alias Llandough, Cardiff)", ME, "piddington.parish.clerk@piddingtonpc.org", "Toponym / manorial parallel enquiry."),
+        ],
+      },
+    },
+  },
+  {
+    id: "church-in-wales",
+    name: "Church in Wales / Llandough parish",
+    shortName: "Church in Wales",
+    sector: "archive",
+    track: "archive",
+    role: "Parish registers not already at Glamorgan Archives; churchyard; any glebe/manorial notes.",
+    holds: "Registers still in parish custody; faculty papers.",
+    emails: ["headoffice@churchinwales.org.uk"],
+    policies: [
+      { label: "Church in Wales", url: "https://www.churchinwales.org.uk/" },
+      { label: "Glamorgan Archives parish collections", url: "https://glamarchives.gov.uk/" },
+    ],
+    notes: "No Gmail correspondence located. Ask the diocese which Llandough/Michaelston registers have not been deposited.",
+    overlays: {},
+  },
+  {
+    id: "bbc",
+    name: "BBC Written Archives Centre",
+    shortName: "BBC Archives",
+    sector: "media",
+    track: "media",
+    role: "Possible holder of 1988 broadcast / written coverage of the demolition, distinct from ITV.",
+    holds: "Written Archives, programme files, news scripts. Not FOIA for programme archives in the usual sense; they have their own research service.",
+    emails: ["Heritage@bbc.co.uk", "yourvoice@bbc.co.uk"],
+    policies: [
+      { label: "BBC Written Archives", url: "https://www.bbc.co.uk/archive/written-archives-centre" },
+      { label: "BBC FOI", url: "https://www.bbc.co.uk/foi/" },
+    ],
+    notes: "yourvoice@bbc.co.uk forwarded 9 May 2026; Written Archives auto-ack 11 Aug 2026. Chase a numbered research request for 1988 Llandough / Great House Farm coverage. BBC FOI covers only information held for purposes other than journalism/art/literature.",
+    overlays: {
+      "media.newsroom": {
+        status: "awaiting",
+        emails: [
+          e("2026-05-09", "out", "Fwd: Formal Notice Follow Up: Resolution of Historical Dispossession and Fraud – Great House Farm, Llandough, Vale of Glamorgan", ME, "yourvoice@bbc.co.uk", "Forward of the formal notice."),
+          e("2026-08-11", "in", "Thank you for emailing the BBC Written Archives Centre", "Heritage@bbc.co.uk", ME, "Auto-ack of a Written Archives request."),
+        ],
+        note: "Follow with a dated research request: 1988 demolition coverage, any news script or programme file naming Great House Farm / Llandough / Buckler.",
+      },
+    },
+  },
+  {
+    id: "audit-wales",
+    name: "Audit Wales",
+    shortName: "Audit Wales",
+    sector: "regulator",
+    track: "regulator",
+    role: "Auditor of Welsh public bodies. Can examine value-for-money / governance failures at Cadw, Vale, health boards — not a title court.",
+    holds: "Audit files, correspondence with audited bodies, any historic Welsh Office residual.",
+    emails: ["info@audit.wales"],
+    policies: [
+      { label: "Audit Wales", url: "https://www.audit.wales/" },
+      { label: "FOI", url: "https://www.audit.wales/about-us/freedom-information" },
+    ],
+    notes: "enquiries@audit.wales bounced 21 Jul 2026. Remaining: use info@audit.wales / the published FOI channel. A records-management / governance briefing, not a title complaint.",
+    foiPolicy: "https://www.audit.wales/about-us/freedom-information",
+    foiContact: "info@audit.wales",
+    overlays: {
+      "enquiry.informal": {
+        status: "bounce",
+        emails: [
+          e("2026-07-21", "out", "Buckler vs United Kingdom", ME, "enquiries@audit.wales", "BCC of the records/oversight letter."),
+          e("2026-07-21", "in", "Delivery Status Notification (Failure)", "Mail Delivery Subsystem", ME, "Address not found: enquiries@audit.wales."),
+        ],
+        note: "Resend to info@audit.wales. Do not frame as a title dispute.",
+      },
+    },
+  },
+  {
+    id: "landmark",
+    name: "Landmark Chambers",
+    shortName: "Landmark Chambers",
+    sector: "private",
+    track: "private",
+    role: "Counsel set approached for a view on the forensic report and any historic involvement.",
+    holds: "None identified. Written confirmation that chambers has no records of the matter.",
+    emails: ["CMcGilly@landmarkchambers.co.uk"],
+    policies: [
+      { label: "Landmark Chambers", url: "https://www.landmarkchambers.co.uk/" },
+    ],
+    notes: "Connor McGilly (practice manager) 10–18 Aug 2026: no public-access capacity; no one in chambers involved; no records of the matter. That specific enquiry is depleted. Instruction of other counsel remains.",
+    overlays: {
+      "enquiry.informal": {
+        status: "exhausted",
+        emails: [
+          e("2026-08-07", "out", "Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "CMcGilly@landmarkchambers.co.uk", "Seeking a preliminary view on historical land material."),
+          e("2026-08-10", "in", "RE: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", "Connor McGilly <CMcGilly@landmarkchambers.co.uk>", ME, "No capacity on a public-access basis at present."),
+          e("2026-08-10", "out", "Re: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "CMcGilly@landmarkchambers.co.uk", "Clarifying whether anyone in chambers had historic involvement."),
+          e("2026-08-12", "in", "RE: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", "Connor McGilly <CMcGilly@landmarkchambers.co.uk>", ME, "As far as I can see, no one in chambers has been involved."),
+          e("2026-08-12", "out", "Re: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "CMcGilly@landmarkchambers.co.uk", "Asked about predecessor sets / former members."),
+          e("2026-08-14", "in", "RE: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", "Connor McGilly <CMcGilly@landmarkchambers.co.uk>", ME, "We don't have any records of this matter."),
+          e("2026-08-14", "out", "Re: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "CMcGilly@landmarkchambers.co.uk", "Scope of search still unclear."),
+          e("2026-08-18", "in", "RE: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", "Connor McGilly <CMcGilly@landmarkchambers.co.uk>", ME, "No records identified; chambers is not undertaking the wider historical research."),
+          e("2026-08-18", "out", "Re: Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "CMcGilly@landmarkchambers.co.uk", "Position accepted; thanks."),
+        ],
+      },
+    },
+  },
+  {
+    id: "falcon",
+    name: "Falcon Chambers",
+    shortName: "Falcon Chambers",
+    sector: "private",
+    track: "private",
+    role: "Specialist property-law set. Approached 7 Aug 2026 for a preliminary view.",
+    holds: "None expected unless they accept instructions.",
+    emails: ["clerks@falcon-chambers.com"],
+    policies: [
+      { label: "Falcon Chambers", url: "https://www.falcon-chambers.com/" },
+    ],
+    notes: "Email 7 Aug 2026 seeking a preliminary view. No reply located. A polite chase, then another set if silent.",
+    overlays: {
+      "enquiry.informal": {
+        status: "sent",
+        emails: [
+          e("2026-08-07", "out", "Proposed Restructuring of the Great House Farm (Ty Mawr) Forensic Report", ME, "clerks@falcon-chambers.com", "Seeking a preliminary view on a substantial body of historical land material."),
+        ],
+      },
+    },
+  },
+  {
+    id: "senedd-members",
+    name: "Senedd Members (wrong-address blast, May 2026)",
+    shortName: "Senedd Members",
+    sector: "elected",
+    track: "elected",
+    role: "Individual Members BCC'd on the 9 May formal notice. Several addresses used the obsolete .ms@senedd.wales form and bounced.",
+    holds: "Nothing until a correctly addressed letter lands.",
+    emails: ["contact@senedd.wales"],
+    policies: [
+      { label: "Find a Member", url: "https://senedd.wales/find-a-member-of-the-senedd/" },
+      { label: "Senedd petitions", url: "https://petitions.senedd.wales/" },
+    ],
+    notes: "9 May 2026 blast bounced: anthony.slaughter.ms@, joseph.martin.ms@, huw.thomas.ms@, rhys.ab.owen@. Correct form is typically Firstname.Lastname@senedd.wales (no .ms). Culture Committee already declined. Remaining: one correctly addressed letter to the constituency MS for Vale of Glamorgan / a Public Accounts Committee clerk, or a Senedd petition.",
+    overlays: {
+      "political.constituency": {
+        status: "bounce",
+        emails: [
+          e("2026-05-09", "out", "Formal Notice Follow Up: Resolution of Historical Dispossession and Fraud – Great House Farm, Llandough, Vale of Glamorgan", ME, "anthony.slaughter.ms@senedd.wales", "BCC of the formal notice."),
+          e("2026-05-09", "in", "Delivery Status Notification (Failure)", "Mail Delivery Subsystem", ME, "anthony.slaughter.ms@, joseph.martin.ms@, huw.thomas.ms@, rhys.ab.owen@ not found."),
+        ],
+        note: "Resend to published @senedd.wales addresses from the Member directory. Do not reuse the .ms suffix.",
+      },
+      "political.petition": { status: "open" },
+    },
+  },
+];
+
+export const PARTIES: Party[] = seeds.map((s) => ({
+  id: s.id,
+  name: s.name,
+  shortName: s.shortName,
+  sector: s.sector,
+  track: s.track,
+  role: s.role,
+  holds: s.holds,
+  emails: s.emails,
+  policies: s.policies,
+  wdtk: s.wdtk,
+  notes: s.notes,
+  avenues: buildAvenues(s.track, s.overlays, {
+    foiPolicy: s.foiPolicy,
+    sarPolicy: s.sarPolicy,
+    complaintPolicy: s.complaintPolicy,
+    ombudsman: s.ombudsman,
+    ombudsmanUrl: s.ombudsmanUrl,
+    foiContact: s.foiContact,
+    sarContact: s.sarContact,
+    complaintContact: s.complaintContact,
+  }),
+}));
+
+export const SNAPSHOT_DATE = "2026-09-06";
